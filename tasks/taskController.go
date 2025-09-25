@@ -1,7 +1,14 @@
 package tasks
 
+import (
+	"fmt"
+	"task_tracker/storage"
+)
+
 type TaskController struct {
-	tasks map[int]*Task
+	tasks    map[int]*Task
+	latestId int
+	storage  storage.Storage[Task]
 }
 
 func NewTaskController(tasks []Task) *TaskController {
@@ -15,7 +22,15 @@ func NewTaskController(tasks []Task) *TaskController {
 }
 
 func (c TaskController) save() {
+	taskStorage, err := storage.NewFileStorage[Task]("test.json")
+	if err != nil {
+		fmt.Printf("error on save Task%v", err)
+		return
+	}
 
+	for _, task := range c.tasks {
+		taskStorage.Save(task)
+	}
 }
 
 func (c TaskController) CreateTask(description string) {
